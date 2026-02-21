@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorkMonitor Pro - Employee Monitoring & Analytics</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Modal Styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1001; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--surface);
+            margin: auto;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            width: 80%;
+            max-width: 900px;
+            position: relative;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .close-button {
+            color: var(--text-secondary);
+            font-size: 28px;
+            font-weight: bold;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            cursor: pointer;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: var(--danger-color);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">WorkMonitor Pro</a>
+            <ul class="nav-menu">
+                <li><a href="#" class="nav-link active" onclick="showPage('dashboard')">Dashboard</a></li>
+                <li><a href="#" class="nav-link" onclick="showPage('monitoring')">Monitoring</a></li>
+                <li><a href="#" class="nav-link" onclick="showPage('analytics')">Analytics</a></li>
+                <li><a href="#" class="nav-link" onclick="showPage('teams')">Teams</a></li>
+                <li><a href="#" class="nav-link" onclick="showPage('employees')">Employees</a></li>
+                <li><a href="#" class="nav-link" onclick="showPage('projects')">Projects</a></li>
+                <li><a href="#" class="nav-link" onclick="showPage('settings')">Settings</a></li>
+            </ul>
+            <div class="user-profile">
+                <div class="user-avatar">A</div>
+                <span>Admin User</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Dashboard Page -->
+        <div id="dashboard" class="page active">
+            <div class="page-header">
+                <h1 class="page-title">Dashboard</h1>
+                <p class="page-subtitle">Overview of your organization's activity and performance</p>
+            </div>
+
+            <!-- API Data Display -->
+            <div class="api-data">
+                <div class="api-label">Live Dashboard Statistics</div>
+                <div class="dashboard-grid">
+                    <div class="card stat-card">
+                        <div class="stat-number teams-stat" id="teams-count">6</div>
+                        <div class="stat-label">Active Teams</div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-number employees-stat" id="employees-count">31</div>
+                        <div class="stat-label">Total Employees</div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-number projects-stat">12</div>
+                        <div class="stat-label">Active Projects</div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-number productivity-stat">87%</div>
+                        <div class="stat-label">Avg Productivity</div>
+                    </div>
+                </div>
+
+                <div class="team-distribution" id="team-distribution">
+                    <!-- Team distribution will be populated here -->
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Team Distribution</h3>
+                        <div class="card-icon" style="background: rgba(37, 99, 235, 0.1); color: var(--primary-color);">📊</div>
+                    </div>
+                    <div class="chart-container">
+                        <div class="bar-chart" id="team-chart">
+                            <!-- Chart bars will be generated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Activity Overview</h3>
+                        <div class="card-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success-color);">📈</div>
+                    </div>
+                    <div class="activity-graph">
+                        <div class="graph-line"></div>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span style="font-size: 14px; color: var(--text-secondary);">Today's Activity</span>
+                            <span style="font-size: 14px; font-weight: 600;">78%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 78%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Recent Alerts</h3>
+                        <div class="card-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--danger-color);">🚨</div>
+                    </div>
+                    <div style="space-y: 12px;">
+                        <div style="padding: 12px; background: rgba(239, 68, 68, 0.05); border-radius: 8px; margin-bottom: 10px;">
+                            <div style="font-weight: 500; color: var(--danger-color); font-size: 14px;">Unusual Activity Detected</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">Employee ID: 15 - Excessive idle time</div>
+                        </div>
+                        <div style="padding: 12px; background: rgba(245, 158, 11, 0.05); border-radius: 8px; margin-bottom: 10px;">
+                            <div style="font-weight: 500; color: var(--warning-color); font-size: 14px;">Low Productivity Alert</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">Team: Developer - Below 60% threshold</div>
+                        </div>
+                        <div style="padding: 12px; background: rgba(16, 185, 129, 0.05); border-radius: 8px;">
+                            <div style="font-weight: 500; color: var(--success-color); font-size: 14px;">System Update Complete</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">All monitoring services are operational</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monitoring Page -->
+        <div id="monitoring" class="page">
+            <div class="page-header">
+                <h1 class="page-title">Real-time Monitoring</h1>
+                <p class="page-subtitle">Live employee activity tracking and screenshots</p>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active">Screenshots</button>
+                <button class="tab">Activity Logs</button>
+                <button class="tab">Keyboard/Mouse</button>
+                <button class="tab">Application Usage</button>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Live Screenshots</h3>
+                    <div style="display: flex; gap: 10px;">
+                        <select class="form-select" style="width: auto;">
+                            <option>All Employees</option>
+                            <option>Rpmatrix Team</option>
+                            <option>Developer Team</option>
+                            <option>MedBillytics Billing</option>
+                        </select>
+                        <button class="btn btn-primary">Refresh</button>
+                    </div>
+                </div>
+                <div class="screenshot-grid">
+                    <!-- Screenshots will be loaded here -->
+                </div>
+            </div>
+
+            <div class="dashboard-grid" style="margin-top: 30px;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Keyboard Activity</h3>
+                        <div class="card-icon" style="background: rgba(37, 99, 235, 0.1); color: var(--primary-color);">⌨️</div>
+                    </div>
+                    <div class="activity-graph">
+                        <div class="graph-line"></div>
+                    </div>
+                    <div style="margin-top: 15px; font-size: 14px; color: var(--text-secondary);">
+                        <div>Average: 45 WPM</div>
+                        <div>Peak: 78 WPM at 10:30 AM</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Mouse Activity</h3>
+                        <div class="card-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success-color);">🖱️</div>
+                    </div>
+                    <div class="activity-graph">
+                        <div class="graph-line" style="clip-path: polygon(0 100%, 15% 70%, 25% 75%, 35% 60%, 45% 65%, 55% 50%, 65% 55%, 75% 40%, 85% 45%, 95% 30%, 100% 35%, 100% 100%);"></div>
+                    </div>
+                    <div style="margin-top: 15px; font-size: 14px; color: var(--text-secondary);">
+                        <div>Clicks: 1,247</div>
+                        <div>Distance: 2.3 km</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Page -->
+        <div id="analytics" class="page">
+            <div class="page-header">
+                <h1 class="page-title">Analytics & Reports</h1>
+                <p class="page-subtitle">Detailed productivity insights and performance metrics</p>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Productivity Trends</h3>
+                        <select class="form-select" style="width: auto;">
+                            <option>Last 7 Days</option>
+                            <option>Last 30 Days</option>
+                            <option>Last 3 Months</option>
+                        </select>
+                    </div>
+                    <div class="activity-graph" style="height: 250px;">
+                        <div class="graph-line"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Top Performers</h3>
+                        <div class="card-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success-color);">🏆</div>
+                    </div>
+                    <div style="space-y: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-color);">
+                            <div>
+                                <div style="font-weight: 500;">Dr Aysha</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">Rpmatrix Team</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-weight: 600; color: var(--success-color);">94%</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">Productivity</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-color);">
+                            <div>
+                                <div style="font-weight: 500;">Muntaha Tahir</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">Rpmatrix Team</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-weight: 600; color: var(--success-color);">91%</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">Productivity</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0;">
+                            <div>
+                                <div style="font-weight: 500;">Amna Khalid</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">Rpmatrix Team</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-weight: 600; color: var(--success-color);">89%</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">Productivity</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Application Usage</h3>
+                        <div class="card-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning-color);">💻</div>
+                    </div>
+                    <div style="space-y: 12px;">
+                        <div style="margin-bottom: 15px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span style="font-size: 14px;">VS Code</span>
+                                <span style="font-size: 14px; font-weight: 600;">35%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 35%; background: var(--primary-color);"></div>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span style="font-size: 14px;">Chrome Browser</span>
+                                <span style="font-size: 14px; font-weight: 600;">28%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 28%; background: var(--success-color);"></div>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span style="font-size: 14px;">Slack</span>
+                                <span style="font-size: 14px; font-weight: 600;">18%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 18%; background: var(--warning-color);"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span style="font-size: 14px;">Other Apps</span>
+                                <span style="font-size: 14px; font-weight: 600;">19%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 19%; background: var(--danger-color);"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Teams Page -->
+        <div id="teams" class="page">
+            <div class="page-header">
+                <h1 class="page-title">Team Management</h1>
+                <p class="page-subtitle">Manage teams and view attendance data</p>
+            </div>
+
+            <!-- API Data for Attendance -->
+            <div class="api-data">
+                <div class="api-label">
+                    Team Attendance (Live Data)
+                    <select id="team-select" class="form-select" onchange="loadAttendanceData(this.value)" style="margin-left: 10px; width: auto;">
+                        <!-- Options will be populated by JavaScript -->
+                    </select>
+                </div>
+                <div class="table-container">
+                    <table class="table" id="attendance-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Employee Name</th>
+                                <th>First Login</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Attendance data will be populated here by JavaScript -->
+                            <tr><td colspan="5">Loading attendance data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Team Overview</h3>
+                        <button class="btn btn-primary">Add New Team</button>
+                    </div>
+                    <div id="team-overview-cards" style="space-y: 15px;">
+                        <!-- Team overview cards will be dynamically generated here -->
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Team Performance</h3>
+                        <select class="form-select" style="width: auto;">
+                            <option>This Week</option>
+                            <option>This Month</option>
+                            <option>This Quarter</option>
+                        </select>
+                    </div>
+                    <div class="chart-container">
+                        <div class="bar-chart">
+                            <div class="bar" style="height: 85%;">
+                                <div class="bar-value">85%</div>
+                                <div class="bar-label">Rpmatrix</div>
+                            </div>
+                            <div class="bar" style="height: 72%;">
+                                <div class="bar-value">72%</div>
+                                <div class="bar-label">Developer</div>
+                            </div>
+                            <div class="bar" style="height: 78%;">
+                                <div class="bar-value">78%</div>
+                                <div class="bar-label">MedBillytics</div>
+                            </div>
+                            <div class="bar" style="height: 45%;">
+                                <div class="bar-value">45%</div>
+                                <div class="bar-label">Test</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Employees Page -->
+        <div id="employees" class="page">
+            <div class="page-header">
+                <h1 class="page-title">Employee Management</h1>
+                <p class="page-subtitle">Manage employee profiles and assignments</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Employee Directory</h3>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" class="form-input" placeholder="Search employees..." style="width: 250px;">
+                        <button class="btn btn-primary">Add Employee</button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Team</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Productivity</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <div class="user-avatar" style="width: 32px; height: 32px; font-size: 14px;">DA</div>
+                                        <div>
+                                            <div style="font-weight: 500;">Dr Aysha</div>
+                                            <div style="font-size: 12px; color: var(--text-secondary);">dr.aysha@company.com</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Rpmatrix</td>
+                                <td>Senior Developer</td>
+                                <td><span class="status-badge status-online">Online</span></td>
+                                <td>94%</td>
+                                <td>
+                                    <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">Edit</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <div class="user-avatar" style="width: 32px; height: 32px; font-size: 14px;">MT</div>
+                                        <div>
+                                            <div style="font-weight: 500;">Muntaha Tahir</div>
+                                            <div style="font-size: 12px; color: var(--text-secondary);">muntaha@company.com</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Rpmatrix</td>
+                                <td>Developer</td>
+                                <td><span class="status-badge status-online">Online</span></td>
+                                <td>91%</td>
+                                <td>
+                                    <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">Edit</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <div class="user-avatar" style="width: 32px; height: 32px; font-size: 14px;">AK</div>
+                                        <div>
+                                            <div style="font-weight: 500;">Amna Khalid</div>
+                                            <div style="font-size: 12px; color: var(--text-secondary);">amna@company.com</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Rpmatrix</td>
+                                <td>UI/UX Designer</td>
+                                <td><span class="status-badge status-online">Online</span></td>
+                                <td>89%</td>
+                                <td>
+                                    <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">Edit</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <div class="user-avatar" style="width: 32px; height: 32px; font-size: 14px;">DI</div>
+                                        <div>
+                                            <div style="font-weight: 500;">Dr Irum</div>
+                                            <div style="font-size: 12px; color: var(--text-secondary);">dr.irum@company.com</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Rpmatrix</td>
+                                <td>Medical Consultant</td>
+                                <td><span class="status-badge status-offline">Offline</span></td>
+                                <td>--</td>
+                                <td>
+                                    <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">Edit</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Projects Page -->
+        <div id="projects" class="page">
+            <div class="page-header">
+                <h1 class="page-title">Project Management</h1>
+                <p class="page-subtitle">Track project progress and team assignments</p>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Active Projects</h3>
+                        <button class="btn btn-primary">New Project</button>
+                    </div>
+                    <div style="space-y: 15px;">
+                        <div style="padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                                <div>
+                                    <h4 style="font-weight: 600; margin-bottom: 5px;">Medical Billing System</h4>
+                                    <p style="color: var(--text-secondary); font-size: 14px;">Rpmatrix Team • Due: Dec 15, 2024</p>
+                                </div>
+                                <span class="status-badge" style="background: rgba(16, 185, 129, 0.1); color: var(--success-color);">On Track</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 75%;"></div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 14px;">
+                                <span style="color: var(--text-secondary);">Progress: 75%</span>
+                                <span style="color: var(--text-secondary);">12 tasks remaining</span>
+                            </div>
+                        </div>
+                        <div style="padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                                <div>
+                                    <h4 style="font-weight: 600; margin-bottom: 5px;">Employee Portal Redesign</h4>
+                                    <p style="color: var(--text-secondary); font-size: 14px;">Developer Team • Due: Jan 30, 2025</p>
+                                </div>
+                                <span class="status-badge" style="background: rgba(245, 158, 11, 0.1); color: var(--warning-color);">At Risk</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 45%;"></div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 14px;">
+                                <span style="color: var(--text-secondary);">Progress: 45%</span>
+                                <span style="color: var(--text-secondary);">8 tasks remaining</span>
+                            </div>
+                        </div>
+                        <div style="padding: 15px; border: 1px solid var(--border-color); border-radius: 8px;">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                                <div>
+                                    <h4 style="font-weight: 600; margin-bottom: 5px;">Virtual Reception System</h4>
+                                    <p style="color: var(--text-secondary); font-size: 14px;">Virtual Receptionists • Due: Feb 15, 2025</p>
+                                </div>
+                                <span class="status-badge" style="background: rgba(37, 99, 235, 0.1); color: var(--primary-color);">Planning</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 15%;"></div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 14px;">
+                                <span style="color: var(--text-secondary);">Progress: 15%</span>
+                                <span style="color: var(--text-secondary);">25 tasks remaining</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Task Distribution</h3>
+                        <div class="card-icon" style="background: rgba(37, 99, 235, 0.1); color: var(--primary-color);">📋</div>
+                    </div>
+                    <div class="chart-container">
+                        <div class="bar-chart">
+                            <div class="bar" style="height: 60%;">
+                                <div class="bar-value">24</div>
+                                <div class="bar-label">To Do</div>
+                            </div>
+                            <div class="bar" style="height: 80%;">
+                                <div class="bar-value">32</div>
+                                <div class="bar-label">In Progress</div>
+                            </div>
+                            <div class="bar" style="height: 45%;">
+                                <div class="bar-value">18</div>
+                                <div class="bar-label">Review</div>
+                            </div>
+                            <div class="bar" style="height: 90%;">
+                                <div class="bar-value">36</div>
+                                <div class="bar-label">Completed</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Page -->
+        <div id="settings" class="page">
+            <div class="page-header">
+                <h1 class="page-title">Settings</h1>
+                <p class="page-subtitle">Configure monitoring preferences and user roles</p>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Monitoring Settings</h3>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Screenshot Frequency</label>
+                        <select class="form-select">
+                            <option>Every 5 minutes</option>
+                            <option>Every 10 minutes</option>
+                            <option>Every 15 minutes</option>
+                            <option>Every 30 minutes</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Activity Tracking</label>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                                <input type="checkbox" checked> Keyboard Activity
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                                <input type="checkbox" checked> Mouse Activity
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                                <input type="checkbox" checked> Application Usage
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                                <input type="checkbox"> Website Tracking
+                            </label>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary">Save Settings</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">User Roles & Permissions</h3>
+                    </div>
+                    <div style="space-y: 15px;">
+                        <div style="padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h4 style="font-weight: 600; margin-bottom: 5px;">Administrator</h4>
+                                    <p style="color: var(--text-secondary); font-size: 14px;">Full system access and management</p>
+                                </div>
+                                <button class="btn btn-secondary">Edit</button>
+                            </div>
+                        </div>
+                        <div style="padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h4 style="font-weight: 600; margin-bottom: 5px;">Team Manager</h4>
+                                    <p style="color: var(--text-secondary); font-size: 14px;">Manage team members and view reports</p>
+                                </div>
+                                <button class="btn btn-secondary">Edit</button>
+                            </div>
+                        </div>
+                        <div style="padding: 15px; border: 1px solid var(--border-color); border-radius: 8px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h4 style="font-weight: 600; margin-bottom: 5px;">Employee</h4>
+                                    <p style="color: var(--text-secondary); font-size: 14px;">View own activity and reports</p>
+                                </div>
+                                <button class="btn btn-secondary">Edit</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" style="margin-top: 15px;">Add New Role</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Productivity Criteria</h3>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Minimum Activity Threshold (%)</label>
+                        <input type="range" min="0" max="100" value="60" class="form-input" style="height: 8px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-secondary); margin-top: 5px;">
+                            <span>0%</span>
+                            <span>Current: 60%</span>
+                            <span>100%</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Idle Time Alert (minutes)</label>
+                        <input type="number" value="15" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Working Hours</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="time" value="09:00" class="form-input">
+                            <span style="align-self: center;">to</span>
+                            <input type="time" value="17:00" class="form-input">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary">Update Criteria</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Employee Details Modal -->
+    <div id="employeeDetailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalEmployeeName"></h2>
+                <span class="close-button" onclick="closeModal('employeeDetailsModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="employeeDetailsContent">
+                    <!-- Employee specific data will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Team Details Modal (existing) -->
+    <div id="teamDetailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTeamName"></h2>
+                <span class="close-button" onclick="closeModal('teamDetailsModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Productivity</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teamEmployeesTableBody">
+                            <!-- Employee data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    const teamIdMap = {
+        "Rpmatrix": 3,
+        "Developer": 5,
+        "MedBillytics Billing": 2,
+        "Virtual Receptionists": 1,
+        "Test": 4,
+        "NYR BILLING": 6 
+    };
+
+    // Function to load live screenshots from backend
+    function loadLiveScreenshots() {
+        const apiUrl = "https://corsproxy.io/?https://genzbpo.com/bilal/screenshots/listScreenshots.php";
+        const grid = document.querySelector('.screenshot-grid');
+        if (!grid) return;
+        grid.innerHTML = '<div>Loading screenshots...</div>';
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                grid.innerHTML = '';
+                if (!Array.isArray(data) || data.length === 0) {
+                    grid.innerHTML = '<div>No screenshots found.</div>';
+                    return;
+                }
+                data.forEach(screenshot => {
+                    const item = document.createElement('div');
+                    item.className = 'screenshot-item';
+                    item.innerHTML = `
+                        <img src="${screenshot.url}" alt="Screenshot" style="width:100%;height:auto;object-fit:cover;">
+                        <div class="screenshot-overlay">
+                            <div>${new Date(screenshot.timestamp * 1000).toLocaleString()}</div>
+                        </div>
+                    `;
+                    grid.appendChild(item);
+                });
+            })
+            .catch(error => {
+                console.error("Error loading screenshots:", error);
+                grid.innerHTML = '<div style="color: var(--danger-color);">Error loading screenshots.</div>';
+            });
+    }
+
+    // Navigation functionality
+    function showPage(pageId) {
+        const pages = document.querySelectorAll('.page');
+        pages.forEach(page => page.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => link.classList.remove('active'));
+        // Find the clicked nav-link and add the active class
+        const clickedLink = document.querySelector(`.nav-link[onclick*="${pageId}"]`);
+        if (clickedLink) {
+            clickedLink.classList.add('active');
+        }
+        if (pageId === 'teams') {
+            populateTeamDropdown();
+            loadAttendanceData(document.getElementById('team-select').value);
+            loadTeamOverview(); // Load team overview cards when Teams page is shown
+        }
+        if (pageId === 'monitoring') {
+            loadLiveScreenshots();
+        }
+    }
+
+    // ✅ Updated to use real API via proxy
+    function loadDashboardData() {
+        const proxyUrl = "https://corsproxy.io/?";
+        const targetApi = "https://genzbpo.com/api/dashboard_stats.php";
+
+        fetch(proxyUrl + targetApi)
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return response.json();
+            })
+            .then(dashboardStats => {
+                document.getElementById('teams-count').textContent = dashboardStats.teams;
+                document.getElementById('employees-count').textContent = dashboardStats.employees;
+
+                const distributionContainer = document.getElementById('team-distribution');
+                distributionContainer.innerHTML = '';
+                dashboardStats.distribution.forEach(team => {
+                    const teamItem = document.createElement('div');
+                    teamItem.className = 'team-item';
+                    teamItem.innerHTML = `
+                        <div class="team-count">${team.count}</div>
+                        <div class="team-name">${team.team}</div>
+                    `;
+                    distributionContainer.appendChild(teamItem);
+                });
+
+                const chartContainer = document.getElementById('team-chart');
+                chartContainer.innerHTML = '';
+                const maxCount = Math.max(...dashboardStats.distribution.map(t => t.count));
+                dashboardStats.distribution.forEach(team => {
+                    if (team.count > 0) {
+                        const bar = document.createElement('div');
+                        bar.className = 'bar';
+                        bar.style.height = `${(team.count / maxCount) * 100}%`;
+                        bar.innerHTML = `
+                            <div class="bar-value">${team.count}</div>
+                            <div class="bar-label">${team.team.split(' ')[0]}</div>
+                        `;
+                        chartContainer.appendChild(bar);
+                    }
+                });
+            })
+            .catch(error => {
+                console.error("Error fetching dashboard data:", error);
+                alert("Failed to load dashboard stats: " + error.message);
+            });
+    }
+
+    // Function to populate the team dropdown
+    function populateTeamDropdown() {
+        const proxyUrl = "https://corsproxy.io/?";
+        const targetApi = "https://genzbpo.com/api/dashboard_stats.php"; // API to get team names
+        const teamSelect = document.getElementById('team-select');
+
+        fetch(proxyUrl + targetApi)
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                const teams = data.distribution;
+                teamSelect.innerHTML = ''; // Clear existing options
+                teams.forEach(team => {
+                    const option = document.createElement('option');
+                    option.value = team.team;
+                    option.textContent = team.team;
+                    teamSelect.appendChild(option);
+                });
+                // Set default selected team if needed, e.g., "Rpmatrix"
+                teamSelect.value = "Rpmatrix";
+            })
+            .catch(error => {
+                console.error("Error populating team dropdown:", error);
+                const option = document.createElement('option');
+                option.value = "";
+                option.textContent = "Error loading teams";
+                teamSelect.appendChild(option);
+            });
+    }
+
+function loadAttendanceData(teamName) {
+    if (!teamName) {
+        console.warn("No team selected for attendance data.");
+        document.querySelector('#attendance-table tbody').innerHTML = '<tr><td colspan="5">Please select a team.</td></tr>';
+        return;
+    }
+
+    // Get the teamId from the teamIdMap
+    const teamId = teamIdMap[teamName] || 0; // Default to 0 or handle unknown IDs
+
+    if (teamId === 0) {
+        document.querySelector('#attendance-table tbody').innerHTML = `<tr><td colspan="5" style="color: var(--danger-color);">Error: Team ID not found for "${teamName}". Cannot fetch details.</td></tr>`;
+        return;
+    }
+
+    const proxyUrl = "https://corsproxy.io/?";
+    const targetApi = `https://genzbpo.com/api/getAttendanceByTeam.php?team=${encodeURIComponent(teamName)}`;
+    const tableBody = document.querySelector('#attendance-table tbody');
+    tableBody.innerHTML = '<tr><td colspan="5">Loading attendance data...</td></tr>';
+
+    fetch(proxyUrl + targetApi)
+        .then(response => {
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            return response.json();
+        })
+        .then(data => {
+            const rows = Array.isArray(data) ? data : (data.data || []);
+            if (!rows.length) {
+                tableBody.innerHTML = `<tr><td colspan="5">No attendance data found for ${teamName} Team.</td></tr>`;
+                return;
+            }
+            tableBody.innerHTML = '';
+            rows.forEach(employee => {
+                const row = document.createElement('tr');
+                const isOnline = employee.first_login && employee.first_login !== 'N/A';
+                let loginTime = 'Not logged in';
+                try {
+                    const date = new Date(employee.first_login);
+                    loginTime = !isNaN(date) ? date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : employee.first_login;
+                } catch {
+                    loginTime = employee.first_login;
+                }
+                row.innerHTML = `
+                    <td>${employee.id || 'N/A'}</td>
+                    <td>${employee.name || 'N/A'}</td>
+                    <td>${loginTime}</td>
+                    <td><span class="status-badge ${isOnline ? 'status-online' : 'status-offline'}">${isOnline ? 'Online' : 'Offline'}</span></td>
+                    <td><button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;" onclick="showEmployeeDetails(${employee.id}, '${employee.name}', ${teamId})">View Details</button></td>
+                `;
+                tableBody.appendChild(row);
+            });
+        })
+        .catch(error => {
+            console.error("Error fetching attendance data:", error);
+            tableBody.innerHTML = `<tr><td colspan="5" style="color: var(--danger-color);">Error loading attendance data: ${error.message}</td></tr>`;
+        });
+}
+
+
+    // Function to load team overview cards dynamically
+    function loadTeamOverview() {
+        const proxyUrl = "https://corsproxy.io/?";
+        const targetApi = "https://genzbpo.com/api/dashboard_stats.php"; // Re-using dashboard stats for team list
+        const teamOverviewContainer = document.getElementById('team-overview-cards');
+        teamOverviewContainer.innerHTML = '<p>Loading teams...</p>';
+
+        fetch(proxyUrl + targetApi)
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                const teams = data.distribution; // Assuming 'distribution' array contains team info
+                if (!teams || teams.length === 0) {
+                    teamOverviewContainer.innerHTML = '<p>No teams found.</p>';
+                    return;
+                }
+
+                teamOverviewContainer.innerHTML = ''; // Clear loading message
+                teams.forEach(team => {
+                    // Get team_id from the map, default to 0 or handle unknown teams
+                    const teamId = teamIdMap[team.team] || 0; // Use 0 or another indicator for unknown IDs
+                    const teamCard = document.createElement('div');
+                    teamCard.style.cssText = "padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 15px;";
+                    teamCard.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h4 style="font-weight: 600; margin-bottom: 5px;">${team.team}</h4>
+                                <p style="color: var(--text-secondary); font-size: 14px;">${team.count} members • ${team.productivity_status || 'N/A'} productivity</p>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <button class="btn btn-secondary" onclick="showTeamDetails(${teamId}, '${team.team}')">View Details</button>
+                            </div>
+                        </div>
+                    `;
+                    teamOverviewContainer.appendChild(teamCard);
+                });
+            })
+            .catch(error => {
+                console.error("Error fetching team overview:", error);
+                teamOverviewContainer.innerHTML = `<p style="color: var(--danger-color);">Error loading teams: ${error.message}</p>`;
+            });
+    }
+
+
+    // Function to show team details in a modal (existing)
+    function showTeamDetails(teamId, teamName) {
+        const proxyUrl = "https://corsproxy.io/?";
+        const targetApi = `https://genzbpo.com/api/getEmployeesByTeam.php?team_id=${teamId}`;
+        const modal = document.getElementById('teamDetailsModal');
+        const modalTitle = document.getElementById('modalTeamName');
+        const tableBody = document.getElementById('teamEmployeesTableBody');
+
+        modalTitle.textContent = `${teamName} Team Details`;
+        tableBody.innerHTML = '<tr><td colspan="5">Loading employee data...</td></tr>';
+        modal.style.display = 'flex'; // Use flex to center the modal
+
+        // Check if teamId is valid before fetching
+        if (teamId === 0) { // Using 0 as an indicator for unknown IDs
+            tableBody.innerHTML = '<tr><td colspan="5">Team ID not found for this team. Cannot fetch details.</td></tr>';
+            return;
+        }
+
+        fetch(proxyUrl + targetApi)
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                const employees = Array.isArray(data) ? data : (data.data || []);
+                if (!employees.length) {
+                    tableBody.innerHTML = '<tr><td colspan="5">No employees found for this team.</td></tr>';
+                    return;
+                }
+                tableBody.innerHTML = '';
+                employees.forEach(employee => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${employee.id || 'N/A'}</td>
+                        <td>${employee.name || 'N/A'}</td>
+                        <td>${employee.email || 'N/A'}</td>
+                        <td>${employee.role || 'N/A'}</td>
+                        <td>${employee.productivity ? employee.productivity + '%' : 'N/A'}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error("Error fetching team employees:", error);
+                tableBody.innerHTML = `<tr><td colspan="5" style="color: var(--danger-color);">Error loading employee data: ${error.message}</td></tr>`;
+            });
+    }
+
+function showEmployeeDetails(employeeId, employeeName, teamId) { // Added teamId parameter
+    const proxyUrl = "https://corsproxy.io/?";
+    // Use the passed teamId to fetch employees from the correct team
+    const targetApi = `https://genzbpo.com/api/getEmployeesByTeam.php?team_id=${teamId}`;
+    const modal = document.getElementById('employeeDetailsModal');
+    const modalTitle = document.getElementById('modalEmployeeName');
+    const detailsContent = document.getElementById('employeeDetailsContent');
+
+    modalTitle.textContent = `${employeeName}'s Details`;
+    detailsContent.innerHTML = '<p>Loading employee data...</p>';
+    modal.style.display = 'flex';
+
+    // Check if teamId is valid before fetching
+    if (!teamId || teamId === 0) {
+        detailsContent.innerHTML = '<p style="color: var(--danger-color);">Error: Team ID not provided or invalid.</p>';
+        return;
+    }
+
+    fetch(proxyUrl + targetApi)
+        .then(response => {
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            return response.json();
+        })
+        .then(data => {
+            const employees = Array.isArray(data) ? data : (data.data || []);
+            const employee = employees.find(emp => emp.id == employeeId); // Find the specific employee
+
+            if (employee) {
+                detailsContent.innerHTML = `
+                    <p><strong>ID:</strong> ${employee.id || 'N/A'}</p>
+                    <p><strong>Name:</strong> ${employee.name || 'N/A'}</p>
+                    <p><strong>Email:</strong> ${employee.email || 'N/A'}</p>
+                    <!-- Add more employee details as available from your API -->
+                `;
+            } else {
+                detailsContent.innerHTML = '<p>Employee details not found for this team.</p>';
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching employee details:", error);
+            detailsContent.innerHTML = `<p style="color: var(--danger-color);">Error loading employee details: ${error.message}</p>`;
+        });
+}
+
+
+
+    // Function to close any modal
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        loadDashboardData();
+        // Only load attendance data if the teams page is initially active
+        if (document.getElementById('teams').classList.contains('active')) {
+            populateTeamDropdown();
+            // Load attendance for the initially selected team (e.g., "Rpmatrix")
+            loadAttendanceData(document.getElementById('team-select').value);
+            loadTeamOverview(); // Load team overview cards when Teams page is shown
+        }
+        if (document.getElementById('monitoring').classList.contains('active')) {
+            loadLiveScreenshots(); // Load live screenshots when Monitoring page is shown
+        }
+
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function () {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        setTimeout(() => {
+            document.querySelectorAll('.progress-fill').forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => bar.style.width = width, 100);
+            });
+        }, 500);
+    });
+
+    setInterval(() => {
+        const productivityElement = document.querySelector('.productivity-stat');
+        if (productivityElement) {
+            const currentValue = parseInt(productivityElement.textContent);
+            const newValue = Math.max(75, Math.min(95, currentValue + Math.floor(Math.random() * 6) - 3));
+            productivityElement.textContent = newValue + '%';
+        }
+    }, 30000);
+</script>
+
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'95cf4921f34d97a4',t:'MTc1MjE0MjM3Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
